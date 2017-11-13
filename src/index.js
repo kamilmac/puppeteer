@@ -3,7 +3,7 @@
 // continue researching webpack chunk loading and backbone ability to work with it
 
 
-const Director = config => {
+const Puppeteer = config => {
   const global = window
   const topics = {}
   let store = {}
@@ -26,8 +26,8 @@ const Director = config => {
 
   return {
     subscribe: (topic, listener = () => {}) => {
-      if (storeAttached && ['STORE:GET', 'STORE:PUT', 'STORE:CHANGE'].includes(topic)) {
-        warn('Piggybacking on STORE.GET/PUT/CHANGE prohibited')
+      if (storeAttached && ['STORE:GET', 'STORE:SET', 'STORE:CHANGE'].includes(topic)) {
+        warn('Piggybacking on STORE.GET/SET/CHANGE prohibited')
       }
       if (!topics.hasOwnProperty(topic)) topics[topic] = []
       const index = topics[topic].push(listener) - 1
@@ -131,9 +131,9 @@ const Director = config => {
     attachStore: function(_store = {}) {
       const self = this
       store = _store
-      self.subscribe('STORE:PUT', (data) => {
+      self.subscribe('STORE:SET', (data) => {
         if (typeof data !== 'object') {
-          warn('STORE:PUT expect object s argument')
+          warn('STORE:SET expect object s argument')
           return false
         }
         store = {
@@ -153,4 +153,4 @@ const Director = config => {
   }
 }
 
-export default Director
+export default Puppeteer
