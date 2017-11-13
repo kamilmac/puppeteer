@@ -1,3 +1,4 @@
+import SystemJS from 'systemjs'
 // TODO:
 // current way of communicating is done thru global window object
 // continue researching webpack chunk loading and backbone ability to work with it
@@ -15,7 +16,6 @@ const Puppeteer = config => {
   const warn = (...args) => { console.warn(...args) }
   const error = (...args) => { console.error(...args) }
   
-  if (!SystemJS) error('SystemJS is required')
   if (!config.apps || typeof config.apps !== "object") error('Missing "apps" object definition')
   Object.keys(config.apps).forEach(app => {
     const _app = config.apps[app]

@@ -5,6 +5,9 @@ module.exports = {
     library: 'puppeteer',
     libraryTarget: 'umd'
   },
+  node: {
+    fs: 'empty'
+  },
   module: {
     rules: [
       {
