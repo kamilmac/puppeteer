@@ -7,6 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
   },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/kamilmac/puppeteer.git"
+  },
   "keywords": [],
   "author": "Kamil Macinski <kmacinski@gmail.com>",
   "license": "ISC",
