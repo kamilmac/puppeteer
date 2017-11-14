@@ -1,5 +1,3 @@
-const path = require('path')
-
 const config = {
   node: {
     fs: 'empty'
@@ -30,19 +28,4 @@ const main = Object.assign({}, config, {
   },
 })
 
-const example = Object.assign({}, config,{
-  entry: './example/index.js',
-  output: {
-    filename: './example/bundle.js',
-  },
-  devServer: {
-    contentBase: './example',
-    compress: true,
-    port: 5000
-  },
-})
-
-module.exports = env => {
-  if (env && env.example) return example
-  return main
-}
+module.exports = main

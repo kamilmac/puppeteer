@@ -1,8 +1,6 @@
 import SystemJS from 'systemjs/dist/system-production'
-// TODO:
-// current way of communicating is done thru global window object
-// continue researching webpack chunk loading and backbone ability to work with it
 
+const Loader = SystemJS
 
 const Puppeteer = config => {
   const global = window
@@ -68,7 +66,7 @@ const Puppeteer = config => {
       Object.keys(apps).forEach(app => {
         self.subscribe(`${app.toUpperCase()}:MOUNT`, () => {
           if (apps[app].mounted) return true
-          return SystemJS.import(apps[app].bundleLocation).then(module => {
+          return Loader.import(apps[app].bundleLocation).then(module => {
             apps[app].mounted = true
             const mountFunc = global[apps[app].mountFuncName]
             if (!mountFunc) {
