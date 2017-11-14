@@ -1,6 +1,6 @@
 {
   "name": "@kamilmac/puppeteer",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -19,7 +19,6 @@
     "@babel/preset-env": "^7.0.0-beta.31",
     "babel-loader": "^8.0.0-beta.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "systemjs": "^0.20.19",
     "webpack": "^3.8.1"
   }
 }

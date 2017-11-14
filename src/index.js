@@ -1,7 +1,3 @@
-import SystemJS from 'systemjs/dist/system-production'
-
-const Loader = SystemJS
-
 const Puppeteer = config => {
   const global = window
   const topics = {}
@@ -17,7 +13,7 @@ const Puppeteer = config => {
   if (!config.apps || typeof config.apps !== "object") error('Missing "apps" object definition')
   Object.keys(config.apps).forEach(app => {
     const _app = config.apps[app]
-    if (!_app.bundleLocation) error('Missing "bundleLocation" for app', app)
+    if (!_app.loader) error('Missing "loader" for app', app)
     if (!_app.domHook) error('Missing "domHook" (element id) for app', app)
     if (!_app.mountFuncName) error('Missing "mountFuncName" (global mount function) for app', app)
   })
@@ -66,7 +62,7 @@ const Puppeteer = config => {
       Object.keys(apps).forEach(app => {
         self.subscribe(`${app.toUpperCase()}:MOUNT`, () => {
           if (apps[app].mounted) return true
-          return Loader.import(apps[app].bundleLocation).then(module => {
+          return apps[app].loader().then(() => {
             apps[app].mounted = true
             const mountFunc = global[apps[app].mountFuncName]
             if (!mountFunc) {
