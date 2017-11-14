@@ -5,7 +5,8 @@
   "main": "./lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --optimize-minimize"
+    "build": "webpack --optimize-minimize --progress && webpack --progress --env.example",
+    "example": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
     "babel-loader": "^8.0.0-beta.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "systemjs": "^0.20.19",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
   }
 }

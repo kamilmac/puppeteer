@@ -1,4 +1,4 @@
-import SystemJS from 'systemjs'
+import SystemJS from 'systemjs/dist/system-production'
 // TODO:
 // current way of communicating is done thru global window object
 // continue researching webpack chunk loading and backbone ability to work with it
