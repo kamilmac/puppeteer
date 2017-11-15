@@ -1,6 +1,5 @@
 # puppeteer
 Library for managing micro-frontends.
-SystemJS is required.
 
 ## How it works ?
 
@@ -11,22 +10,22 @@ creates instance of event bus with default actions responsible for
 dynamic mounting/unmounting of children applications.
 
 One can also use inititateAppRouter when simple routing is needed.
-In this case Puppeteer observes and appends hash dynamicaly
+In this case Puppeteer observes and appends hash dynamicaly.
 
 On top of that simple Store functionality is provided which might be usefull
 for keeping global app state like auth info etc.
 
-## Simple Usage
+Puppeteer uses default loader for dynamic loading of external scripts.
+It is possible to use custom loader by passing it as 'loader' property in config object.
+Just make sure it is a funtion that takes file path as argument and returns a promise.
 
-Make sure to include SystemJS loader in your html file.
-```html
-<script src="systemjs/dist/system.js"></script>
-```
+## Simple Usage
 
 ```js
 import Puppeteer from '@kamilmac/puppeteer'
 
 const config = {
+  // loader: YOUR_OPTIONAL_LOADER
   dev: true,  // optional, defaults to false (logs each action if true)
   apps: {
     // Uppercase object key is used as a base for action type and hash name
