@@ -84,7 +84,7 @@ puppeteer.store('CHANGE', data => {
 if (!window.puppeteerActive) {
   ReactDOM.render(
     <App/>,
-    document.getElementById('root)
+    document.getElementById('root')
   )
 } else {
   // Mount function for App1. This is the glue between App1 and Puppeteer
