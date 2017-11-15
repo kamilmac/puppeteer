@@ -1,4 +1,4 @@
-# puppeteer
+# Puppeteer
 Library for managing micro-frontends.
 
 ## How it works ?
@@ -75,17 +75,27 @@ puppeteer.store('CHANGE', data => {
 
 ```
 
-**app1.js (React example)**
+**Children app - app1.js (React example)**
 
 ```js
-// Mount function for App1. This is the glue between App1 and Puppeteer
-window.mountApp1 = (puppeteer, domHook) => {
+
+// Puppeteer sets puppeteerActive flag to true when initialised.
+// Simple check like below allows to run the app in isolation.
+if (!window.puppeteerActive) {
   ReactDOM.render(
-    <App puppeteer={puppeteer}/>,
-    document.getElementById(domHook)
+    <App/>,
+    document.getElementById('root)
   )
-  return () => {
-    ReactDOM.unmountComponentAtNode(document.getElementById(domHook))
+} else {
+  // Mount function for App1. This is the glue between App1 and Puppeteer
+  window.mountApp1 = (puppeteer, domHook) => {
+    ReactDOM.render(
+      <App puppeteer={puppeteer}/>,
+      document.getElementById(domHook)
+    )
+    return () => {
+      ReactDOM.unmountComponentAtNode(document.getElementById(domHook))
+    }
   }
 }
 
@@ -111,3 +121,44 @@ class App extends React.component {
   }
 }
 ```
+
+
+# API
+
+## subscribe
+subscribe(TOPIC, callback)
+Subscribes to TOPIC on event buss. Callback is executed with payload data each time 'publish' method is run. 
+
+
+## publish
+publish(TOPIC, PAYLOAD). Sends event with PAYLOAD
+
+
+## generateAppEvents
+generateAppEvents() creates default actions/events for children apps in config object.
+It uses subscribe/publish methods.
+Route names are based on app keys in config object
+For each app TOPICs are created:
+
+${APP}:ACTION, ${APP}:MOUNT, ${APP}:UNMOUNT
+
+Apps should communicate by using ${APP}:ACTION topic. MOUNT/UNMOUNT actions are resolved automatically.
+
+
+## inititateAppRouter
+inititateAppRouter() subscribes to ROUTER:CUSTOM_HASH_CHANGE event which is run each time url location changes. It publishes ROUTER:NONE_EXISTING_ROUTE event when apps dont match url. It also uses ${APP}:ACTION events for dynamic app mounting.
+App route names are based on app keys in config object.
+
+
+
+## attachStore
+attachStore(INITIAL_STORE_OBJECT) creates simple key-value store which also uses publish/subscribe for communication. Instead of calling publish/subscribe, Puppeteer provides store helper (below) for dealing with it.
+
+## store
+store('GET', key).then(value => { DO YOUR THING WITH value})
+store('SET', { key: value })
+store('CHANGE', changed_object => { REACT TO CHANGES })
+
+
+## getActiveApp
+getActiveApp() returns current active app name.
