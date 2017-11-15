@@ -1,6 +1,18 @@
+const defaultLoader = file => new Promise((resolve, reject) => {
+  if (document.querySelectorAll(`[src="${file}"]`).length) {
+    return resolve(null)
+  }
+  const script = document.createElement("script")
+  script.type = "text/javascript"
+  script.src = file
+  script.onload = () => resolve(null)
+  document.body.appendChild(script)
+})
+
 const Puppeteer = config => {
   const global = window
   const topics = {}
+  const loader = config.loader || defaultLoader
   let store = {}
   let activeApp = null
   let routerInitiated = false
@@ -10,10 +22,11 @@ const Puppeteer = config => {
   const warn = (...args) => { console.warn(...args) }
   const error = (...args) => { console.error(...args) }
   
+  if (typeof loader !== 'function') error('Provider app loader is not a function')
   if (!config.apps || typeof config.apps !== "object") error('Missing "apps" object definition')
   Object.keys(config.apps).forEach(app => {
     const _app = config.apps[app]
-    if (!_app.loader) error('Missing "loader" for app', app)
+    if (!_app.bundleLocation) error('Missing "bundleLocation" for app', app)
     if (!_app.domHook) error('Missing "domHook" (element id) for app', app)
     if (!_app.mountFuncName) error('Missing "mountFuncName" (global mount function) for app', app)
   })
@@ -62,7 +75,7 @@ const Puppeteer = config => {
       Object.keys(apps).forEach(app => {
         self.subscribe(`${app.toUpperCase()}:MOUNT`, () => {
           if (apps[app].mounted) return true
-          return apps[app].loader().then(() => {
+          return loader(apps[app].bundleLocation).then(() => {
             apps[app].mounted = true
             const mountFunc = global[apps[app].mountFuncName]
             if (!mountFunc) {
