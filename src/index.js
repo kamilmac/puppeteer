@@ -22,6 +22,8 @@ const Puppeteer = config => {
   const warn = (...args) => { console.warn(...args) }
   const error = (...args) => { console.error(...args) }
   
+  global.puppeteerActive = true
+  
   if (typeof loader !== 'function') error('Provider app loader is not a function')
   if (!config.apps || typeof config.apps !== "object") error('Missing "apps" object definition')
   Object.keys(config.apps).forEach(app => {
