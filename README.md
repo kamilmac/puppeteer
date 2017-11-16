@@ -25,7 +25,7 @@ Just make sure it is a funtion that takes file path as argument and returns a pr
   - `loader`: custom loader function (consumes file string and returns a promise)
   - `apps`: object describing children apps. App object key is a base for route & action name.
     - `appName`: this object key will resolve to '#/appname' route and APPNAME prefix for events
-      - `bundleLocation`: path to external app bundle
+      - `bundleLocation`: path to external app bundles. List is loaded sequentially.
       - `domHook`: document_id where app should be attached
       - `mountFuncName`: name of the mountung function exisiting on the window object in children app. Returns unmount `function`.
 
@@ -51,12 +51,12 @@ const config = {
   dev: true,
   apps: {
     app1: {
-      bundleLocation: 'app1.js',
+      bundleLocation: ['app1.js'],
       domHook: 'app1',
       mountFuncName: 'mountApp1'
     },
     app2: {
-      bundleLocation: 'app2.js',
+      bundleLocation: ['app2.js'],
       domHook: 'app2',
       mountFuncName: 'mountApp2'
     },
@@ -223,7 +223,7 @@ Consumes Config object and creates Puppeteer instance
   apps: {
     // Uppercase object key is used as a base for action type and hash name
     app1: {
-      bundleLocation: 'app1.js',
+      bundleLocation: ['app1.js'],
       // document element id where app will be attached
       domHook: 'app1',
       // Mounting function accesible of window object
@@ -231,7 +231,7 @@ Consumes Config object and creates Puppeteer instance
       mountFuncName: 'mountApp1'
     },
     app2: {
-      bundleLocation: 'app2.js',
+      bundleLocation: ['app2.js'],
       domHook: 'app2',
       mountFuncName: 'mountApp2'
     },

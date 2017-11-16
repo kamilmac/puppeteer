@@ -9,4 +9,21 @@ const Loader = file => new Promise((resolve, reject) => {
   document.body.appendChild(script)
 })
 
-export default Loader
+const multiLoader = files => {
+  if (typeof files === 'string') {
+    return Loader(files)
+  }
+  if (!Array.isArray(files)) {
+    return console.error('Loader expects string or array')
+  }
+  
+  async function loadFiles(_files) {
+    for(const file of _files) {
+      await Loader(file)
+    }
+  }
+
+  return loadFiles(files)
+}
+
+export default multiLoader

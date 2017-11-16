@@ -9,7 +9,7 @@ import defaultLoader from './defaultLoader.js'
  *   apps: {
  *     // Uppercase object key is used as a base for action type and hash name
  *     app1: {
- *       bundleLocation: 'app1.js',
+ *       bundleLocation: ['app1.js'],
  *       // document element id where app will be attached
  *       domHook: 'app1',
  *       // Mounting function accesible of window object
@@ -17,7 +17,7 @@ import defaultLoader from './defaultLoader.js'
  *       mountFuncName: 'mountApp1'
  *     },
  *     app2: {
- *       bundleLocation: 'app2.js',
+ *       bundleLocation: ['app2.js'],
  *       domHook: 'app2',
  *       mountFuncName: 'mountApp2'
  *     },
