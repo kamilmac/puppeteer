@@ -1,14 +1,31 @@
-const defaultLoader = file => new Promise((resolve, reject) => {
-  if (document.querySelectorAll(`[src="${file}"]`).length) {
-    return resolve(null)
-  }
-  const script = document.createElement("script")
-  script.type = "text/javascript"
-  script.src = file
-  script.onload = () => resolve(null)
-  document.body.appendChild(script)
-})
+import defaultLoader from './defaultLoader.js'
 
+/**
+ * Consumes Config object and creates Puppeteer instance
+ *
+ * {
+ *   loader: OPTIONAL_LOADER_FUNCTION
+ *   dev: DEV_FLAG
+ *   apps: {
+ *     // Uppercase object key is used as a base for action type and hash name
+ *     app1: {
+ *       bundleLocation: 'app1.js',
+ *       // document element id where app will be attached
+ *       domHook: 'app1',
+ *       // Mounting function accesible of window object
+ *       // should return unmount function
+ *       mountFuncName: 'mountApp1'
+ *     },
+ *     app2: {
+ *       bundleLocation: 'app2.js',
+ *       domHook: 'app2',
+ *       mountFuncName: 'mountApp2'
+ *     },
+ *   },
+ * }
+ * @param {Object} config
+ * @returns {Object} Puppeteer instance
+ */
 const Puppeteer = config => {
   const global = window
   const topics = {}
@@ -34,6 +51,14 @@ const Puppeteer = config => {
   })
 
   return {
+    /**
+     * Subscribes to TOPIC on event buss.
+     * Callback is executed with payload data each time 'publish' method is run. 
+     *
+     * @param {String} topic Event to subscribe to.
+     * @param {Function} listener Callback function run when topic event is published.
+     * @returns {Function} Unsubscribe function.
+     */
     subscribe: (topic, listener = () => {}) => {
       if (storeAttached && ['STORE:GET', 'STORE:SET', 'STORE:CHANGE'].includes(topic)) {
         warn('Piggybacking on STORE.GET/SET/CHANGE prohibited')
@@ -43,12 +68,26 @@ const Puppeteer = config => {
       return () => delete topics[topic][index]
     },
 
+    /**
+     * Publishes event with optional payload.
+     *
+     * @param {String} topic Event to publish.
+     * @param {Object} payload optional payload object.
+     * @returns {Promise} Resolves when all subscribed callbacks finished.
+     */
     publish: (topic, payload = {}) => {
       log('--- TOPIC LAUNCHED ---', topic, payload)
       const promises = topics[topic] && topics[topic].length ? topics[topic].map(t => t(payload)) : []
       return Promise.all(promises)
     },
 
+    /**
+     * Wrapper for store events
+     *
+     * @param {String} action Event to publish. (GET|SET|CHANGE)
+     * @param {String|Object|Function} arg Depending on action. (KEY_STRING|OBJECT|CALLBACK)
+     * @returns {Promise|Function} Returns Promise on GET action / Unsubscribe function on CHANGE
+     */
     store: function(action, arg) {
       if (!storeAttached) {
         warn('Store is not attached', action, arg)
@@ -71,6 +110,18 @@ const Puppeteer = config => {
       }
     },
 
+    /**
+     * Creates default actions/events for children apps in config object.
+     * It uses subscribe/publish methods.
+     * Route names are based on app keys in config object
+     * For each app TOPICs are created:
+     *
+     * ${APP}:ACTION, ${APP}:MOUNT, ${APP}:UNMOUNT
+     *
+     * Apps should communicate by using ${APP}:ACTION topic. MOUNT/UNMOUNT actions are resolved automatically.
+     *
+     * @returns {Object} returns this instance
+     */
     generateAppEvents: function() {
       const self = this
       let { apps } = config
@@ -110,6 +161,15 @@ const Puppeteer = config => {
       return self
     },
 
+    /**
+     * Subscribes to ROUTER:CUSTOM_HASH_CHANGE event
+     * which is run each time url location changes.
+     * It publishes ROUTER:NONE_EXISTING_ROUTE event when apps dont match url.
+     * It also uses ${APP}:ACTION events for dynamic app mounting.
+     * App route names are based on app keys in config object.
+     *
+     * @returns {Object} returns this instance
+     */
     initiateAppRouter: function() {
       const self = this
       let { apps } = config
@@ -137,6 +197,15 @@ const Puppeteer = config => {
       return self
     },
 
+
+    /**
+     * Creates simple key-value store which also uses publish/subscribe for communication.
+     * Instead of calling publish/subscribe,
+     * Puppeteer provides store wrapper for dealing with it.
+     *
+     * @param {Object} Optional initial store.
+     * @returns {Object} returns this instance.
+     */
     attachStore: function(_store = {}) {
       const self = this
       store = _store
@@ -158,6 +227,11 @@ const Puppeteer = config => {
       return self
     },
 
+    /**
+     * Returns name of current active app.
+     *
+     * @returns {String}
+     */
     getActiveApp: () => activeApp,
   }
 }
