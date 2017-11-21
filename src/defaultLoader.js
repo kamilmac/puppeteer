@@ -1,13 +1,32 @@
 const Loader = file => new Promise((resolve, reject) => {
-  if (document.querySelectorAll(`[src="${file}"]`).length) {
+  let el = null
+
+  if (document.querySelectorAll(`[src="${file}"]`).length ||
+    document.querySelectorAll(`[href="${file}"]`).length
+  ) {
     return resolve(null)
   }
-  const script = document.createElement("script")
-  script.type = "text/javascript"
-  script.src = file
-  script.onload = () => resolve(null)
-  document.body.appendChild(script)
+
+  switch (true) {
+    case !!file.match(/\.js$/g):
+      el = document.createElement('script')
+      el.type = 'text/javascript'
+      el.src = file
+      el.onload = () => resolve(null)
+      document.body.appendChild(el)
+      break
+    case !!file.match(/\.css$/g):
+      el = document.createElement('link')
+      el.rel = 'stylesheet'
+      el.type = 'text/css'
+      el.href = file
+      el.onload = () => resolve(null)
+      document.head.appendChild(el)
+      break
+    default: resolve(null)
+  }
 })
+
 
 const multiLoader = files => {
   if (typeof files === 'string') {
@@ -25,5 +44,6 @@ const multiLoader = files => {
 
   return loadFiles(files)
 }
+
 
 export default multiLoader
