@@ -1,7 +1,8 @@
 const Loader = file => new Promise((resolve, reject) => {
   let el = null
 
-  if (document.querySelectorAll(`[src="${file}"]`).length ||
+  if (
+    document.querySelectorAll(`[src="${file}"]`).length ||
     document.querySelectorAll(`[href="${file}"]`).length
   ) {
     return resolve(null)
