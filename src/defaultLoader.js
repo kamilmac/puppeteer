@@ -1,11 +1,15 @@
 const Loader = file => new Promise((resolve, reject) => {
   let el = null
 
-  if (
-    document.querySelectorAll(`[src="${file}"]`).length ||
-    document.querySelectorAll(`[href="${file}"]`).length
-  ) {
+  const js = document.querySelectorAll(`[src="${file}"]`)
+  if (js.length) {
     return resolve(null)
+  }
+
+  const css = document.querySelectorAll(`[href="${file}"]`)
+  if (css.length) {
+    css[0].disabled = false
+    return resolve(null)    
   }
 
   switch (true) {
@@ -20,6 +24,7 @@ const Loader = file => new Promise((resolve, reject) => {
       el = document.createElement('link')
       el.rel = 'stylesheet'
       el.type = 'text/css'
+      el.setAttribute('custom_loaded_stylesheet', 'true')
       el.href = file
       el.onload = () => resolve(null)
       document.head.appendChild(el)
@@ -37,6 +42,11 @@ const multiLoader = files => {
     return console.error('Loader expects string or array')
   }
   
+  const allCustomLoadedStylesheets = document.querySelectorAll(`[custom_loaded_stylesheet="true"]`)
+  allCustomLoadedStylesheets.forEach(el => {
+    el.disabled = true
+  })
+
   async function loadFiles(_files) {
     for(const file of _files) {
       await Loader(file)
